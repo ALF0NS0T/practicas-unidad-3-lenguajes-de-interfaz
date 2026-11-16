@@ -1,6 +1,6 @@
 # Unidad 3. Modularización en ensamblador
 
-Esta práctica reúne tres programas en MASM para x86 que usan la biblioteca Irvine32. Cada uno trabaja un tema de la unidad: llamadas entre procedimientos, el caso de una cadena vacía y el paso de parámetros por la pila.
+Esta práctica reúne cuatro programas en MASM para x86 que usan la biblioteca Irvine32. Cada uno trabaja un tema de la unidad: llamadas entre procedimientos, el caso de una cadena vacía, el paso de parámetros por la pila y el uso de macros.
 
 ## Datos del curso
 
@@ -15,6 +15,7 @@ Esta práctica reúne tres programas en MASM para x86 que usan la biblioteca Irv
 - Procedimientos anidados: [`src/procedimientos_anidados.asm`](src/procedimientos_anidados.asm)
 - Cadena vacía: [`src/cadena_vacia.asm`](src/cadena_vacia.asm)
 - Pila manual: [`src/pila_manual.asm`](src/pila_manual.asm)
+- Macros: [`src/macros.asm`](src/macros.asm)
 
 ---
 
@@ -79,3 +80,21 @@ Con base 5 y altura 3 el programa mostró `Area = 15`. Con 7 y 7 mostró 49, y c
 En cada ejecución se imprimieron los dos valores de `ESP` y las respuestas de las comprobaciones. En una de ellas ambos valores fueron `0019FF74`. La dirección cambia de una ejecución a otra, y lo que cuenta es que los dos valores coincidan. Las dos respuestas fueron "SI": la pila quedó equilibrada y `EBX` siguió valiendo `12345h`.
 
 La pila se equilibra porque los dos `PUSH` de los argumentos se compensan con el `RET 8`, y los pares `PUSH`/`POP` de `EBP` y de `EBX` dentro del procedimiento también quedan parejos. `EBX` se conserva por el `PUSH EBX` y el `POP EBX` del procedimiento.
+
+---
+
+## 4. Macros
+
+### Descripción
+
+El programa imprime dos mensajes de la cafetería, uno de bienvenida y otro de despedida, y lo hace de dos maneras. Primero usa la macro `MostrarMensaje`, que recibe como parámetro el nombre de una cadena y agrupa tres instrucciones: cargar su dirección en `EDX`, llamar a `WriteString` y llamar a `Crlf` para bajar a la línea siguiente. Después repite esas mismas tres instrucciones a mano para cada mensaje.
+
+### Macro y procedimiento
+
+Una macro y un procedimiento sirven para no repetir código, pero funcionan distinto. El ensamblador sustituye cada invocación de la macro por sus instrucciones antes de generar el programa, y por eso no hay `CALL` ni `RET` ni uso de la pila para llegar a ella. Un procedimiento, en cambio, existe una sola vez en memoria y se llega a él con `CALL`, como en las prácticas anteriores. En la macro, `texto` es un nombre que se reemplaza por la cadena que se escriba al invocarla.
+
+### Pruebas
+
+El programa no pide datos. Al ejecutarlo, la pantalla muestra cuatro líneas: el mensaje de bienvenida, el de despedida y después esos mismos dos mensajes otra vez.
+
+Las dos primeras líneas salen de las invocaciones de la macro, cada una con una sola línea de código. Las dos últimas salen de las instrucciones escritas a mano. Como las cuatro líneas son idénticas por pares, queda claro que la macro hace lo mismo que el código repetido y que con ella cada mensaje cuesta una línea en el programa fuente.
